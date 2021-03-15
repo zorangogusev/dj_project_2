@@ -3,37 +3,44 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views import View
 
 from .models import User
 
 
-def login_view(request):
-    if request.method == "POST":
+class LoginView(View):
+    def get(self, request):
+        return render(request, "users/login.html")
+
+    def post(self, request, *args, **kwargs):
 
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
 
-        # Check if authentication successful
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "auctions/login.html", {
+        if user is None:
+            return render(request, "users/login.html", {
                 "message": "Invalid username and/or password."
             })
-    else:
-        return render(request, "users/login.html")
+
+        login(request, user)
+        return HttpResponseRedirect(reverse("index"))
 
 
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse("index"))
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return HttpResponseRedirect(reverse("index"))
 
 
-def register(request):
-    if request.method == "POST":
+class RegisterView(View):
+
+    def get(self, request):
+        return render(request, "users/register.html")
+
+    def post(self, request, *args, **kwargs):
+
         username = request.POST["username"]
         email = request.POST["email"]
 
@@ -41,7 +48,7 @@ def register(request):
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
-            return render(request, "auctions/register.html", {
+            return render(request, "users/register.html", {
                 "message": "Passwords must match."
             })
 
@@ -55,5 +62,3 @@ def register(request):
             })
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
-    else:
-        return render(request, "users/register.html")
