@@ -6,12 +6,16 @@ from django.urls import reverse
 from django.views import View
 
 from .models import User
+from django.utils.decorators import method_decorator
+from library.decorators import unauthenticated_user
 
 
 class LoginView(View):
+    @method_decorator(unauthenticated_user)
     def get(self, request):
         return render(request, "users/login.html")
 
+    @method_decorator(unauthenticated_user)
     def post(self, request, *args, **kwargs):
 
         # Attempt to sign user in
@@ -36,9 +40,11 @@ class LogoutView(View):
 
 class RegisterView(View):
 
+    @method_decorator(unauthenticated_user)
     def get(self, request):
         return render(request, "users/register.html")
 
+    @method_decorator(unauthenticated_user)
     def post(self, request, *args, **kwargs):
 
         username = request.POST["username"]
