@@ -61,4 +61,4 @@ class RegisterView(View):
                 "message": "Username already taken."
             })
         login(request, user)
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("auctions:index"))
