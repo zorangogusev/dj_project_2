@@ -17,7 +17,11 @@ class List(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    photo = models.CharField(max_length=100)
+    photo = models.ImageField(default='default-image.png', null=True, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
 
 
 class ListComment(models.Model):

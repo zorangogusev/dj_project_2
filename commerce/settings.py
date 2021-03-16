@@ -125,7 +125,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/images/'
+
 #  for loading css and js file
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+# specify directory where to save images /project_root/static/images
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
