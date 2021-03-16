@@ -59,8 +59,10 @@ class CreateListView(View):
         form = auctions_forms.ListForm(request.POST, request.FILES)
 
         if form.is_valid():
-            print('form is valid')
-            form.save()
+            newList = form.save(commit=False)
+            newList.owner = request.user
+            newList.save()
+
         return redirect(reverse('auctions:index'))
 
 

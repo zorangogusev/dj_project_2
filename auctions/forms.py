@@ -7,7 +7,18 @@ from .models import List, ListComment, Bid
 class ListForm(ModelForm):
     class Meta:
         model = List
-        fields = ['title', 'description', 'start_bid', 'category', 'owner', 'photo']
+        fields = ['title', 'description', 'start_bid', 'category', 'photo']
+        widgets = {
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+            'description': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+            'start_bid': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+        }
 
 
 class ListCommentForm(ModelForm):
