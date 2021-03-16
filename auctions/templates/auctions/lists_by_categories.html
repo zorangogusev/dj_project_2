@@ -1,5 +1,15 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <h1>Lists by categories page</h1>
+
+    <div class="container">
+        <h1>Lists by {{ category }} category</h1>
+
+        <ul>
+            {% for list in lists %}
+                <li><a href="{% url 'auctions:view_list' list.id %}">{{ list.title }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+
 {% endblock %}

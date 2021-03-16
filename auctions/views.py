@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from auctions import forms as auctions_forms
-from .models import List
+from .models import List, Category
 
 
 class IndexView(View):
@@ -57,7 +57,28 @@ class WatchListView(View):
         return render(request, 'auctions/watchlist.html')
 
 
-class ListsByCategoriesView(View):
+class CategoriesView(View):
 
     def get(self, request):
-        return render(request, 'auctions/lists_by_categories.html')
+        categories = Category.objects.all()
+        context = {
+            'categories': categories
+        }
+        return render(request, 'auctions/categories_page.html', context)
+
+
+class ListsByCategoryView(View):
+
+    def get(self, request, category_id):
+        try:
+            category = Category.objects.get(id=category_id)
+        except Exception as e:
+            assert e
+            return redirect(reverse('auctions:index'))
+
+        lists = List.objects.filter(category_id=category_id)
+        context = {
+            'category': category,
+            'lists': lists
+        }
+        return render(request, 'auctions/lists_by_categories.html', context)
