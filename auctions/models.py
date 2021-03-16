@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.utils import timezone
 
 
 class Category(models.Model):
@@ -29,6 +30,7 @@ class ListComment(models.Model):
     content = models.CharField(max_length=200)
     list = models.ForeignKey(List, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
 
 
 class Bid(models.Model):

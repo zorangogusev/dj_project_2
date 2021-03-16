@@ -1,10 +1,11 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from auctions import forms as auctions_forms
-from .models import List, Category
+from .models import List, Category, ListComment
 
 
 class IndexView(View):
@@ -30,8 +31,14 @@ class ListView(View):
             assert e
             return redirect(reverse('auctions:index'))
 
+        list.watched = True if request.user in list.watchers.all() else False
+        comment_form = auctions_forms.ListCommentForm
+        comments = ListComment.objects.filter(list_id=list_id).order_by('-created_at')
+
         context = {
-            'list': list
+            'list': list,
+            'comment_form': comment_form,
+            'comments': comments
         }
         return render(request, 'auctions/view_list.html', context)
 
@@ -71,7 +78,7 @@ class WatchListView(View):
             # print('request.user is: ', request.user)
         else:
             lists_watched.watchers.add(request.user)
-        return redirect(reverse('auctions:index'))
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 class CategoriesView(View):
@@ -99,3 +106,17 @@ class ListsByCategoryView(View):
             'lists': lists
         }
         return render(request, 'auctions/lists_by_categories.html', context)
+
+
+class AddCommentView(View):
+    def post(self, request, list_id):
+        # need refactor...
+        list = List.objects.get(id=list_id)
+        form = auctions_forms.ListCommentForm(request.POST)
+        if form.is_valid():
+            new_form = form.save(commit=False)
+            new_form.user = request.user
+            new_form.list = list
+            new_form.save()
+
+        return redirect(reverse('auctions:view_list', args=[list_id]))

@@ -16,4 +16,6 @@ urlpatterns = [
          login_required(views.ListsByCategoryView.as_view(),  login_url='auctions:index'), name="lists_by_category"),
     path("auctions/<str:list_id>/", login_required(views.ListView.as_view(), login_url='auctions:index'),
          name="view_list"),
+    path("auctions/addcomment/<str:list_id>/", login_required(views.AddCommentView.as_view(), login_url='auctions:index'),
+         name="add_comment"),
 ]
