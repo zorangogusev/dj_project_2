@@ -19,6 +19,7 @@ class List(models.Model):
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     photo = models.ImageField(default='default-image.png', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    watchers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="watched_listings")
 
     def __str__(self):
         return str(self.id) + ' ' + self.title
@@ -28,12 +29,6 @@ class ListComment(models.Model):
     content = models.CharField(max_length=200)
     list = models.ForeignKey(List, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-
-class Watchlist(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    list = models.ForeignKey(List, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Bid(models.Model):

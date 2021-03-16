@@ -1,5 +1,12 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <h1>Watchlist page</h1>
+
+    <div class="container">
+        <h1>Watchlist page</h1>
+        {% for list in lists %}
+            <li><a href="{% url 'auctions:view_list' list.id %}">{{ list.title }}</a></li>
+        {% endfor %}
+    </div>
+
 {% endblock %}

@@ -5,24 +5,39 @@
     <div class="container">
         <h2>Active Listings</h2>
         {% for list in lists %}
-            <a href="{% url 'auctions:view_list' list.id %}">
-                <div class="card mt-2">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-4">
-                                <img class="profile-pic" src="{{ list.photo.url }}" height="150" width="200">
-                            </div>
-                            <div class="col-8">
-                                <p>{{ list.title }}</p>
-                                <p>{{ list.description }}</p>
-                                <p>{{ list.p }}</p>
 
-                                <p>{{ list.created_at }}</p>
-                            </div>
+            <div class="card mt-2">
+                <div class="card-body">
+                <a href="{% url 'auctions:view_list' list.id %}">
+                    <div class="row">
+                        <div class="col-4">
+                            <img class="profile-pic" src="{{ list.photo.url }}" height="150" width="200">
+                        </div>
+                        <div class="col-8">
+                            <p>{{ list.title }}</p>
+                            <p>{{ list.description }}</p>
+                            <p>{{ list.p }}</p>
+
+                            <p>{{ list.created_at }}</p>
                         </div>
                     </div>
+                </a>
+                    <hr>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'auctions:watch_list' %}" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="list_id" value="{{ list.id }}">
+                            {% if list.watched == True %}
+                                <input type="submit" class="btn btn-sm btn-danger" value="Remove from Watchlist">
+                            {% else %}
+                                <input type="submit" class="btn btn-sm btn-success" value="Add to Watchlist">
+                            {% endif %}
+                        </form>
+
+                    {% endif %}
                 </div>
-            </a>
+            </div>
+
         {% endfor %}
     </div>
 

@@ -11,6 +11,10 @@ class IndexView(View):
 
     def get(self, request):
         lists = List.objects.all().filter(active=True).order_by('-created_at')
+
+        for list in lists:
+            list.watched = True if request.user in list.watchers.all() else False
+
         context = {
             'lists': lists
         }
@@ -34,8 +38,6 @@ class ListView(View):
 
 class CreateListView(View):
     def get(self, request):
-
-        user = request.user
         form = auctions_forms.ListForm()
         context = {
             'form': form
@@ -53,8 +55,23 @@ class CreateListView(View):
 
 class WatchListView(View):
 
-    def get(self, request):
-        return render(request, 'auctions/watchlist.html')
+    def get(self, request, list_id=None):
+        lists = request.user.watched_listings.all()
+
+        context = {
+            'lists': lists
+        }
+        return render(request, 'auctions/watchlist.html', context)
+
+    def post(self, request):
+        lists_watched = List.objects.get(id=request.POST.get('list_id'))
+
+        if request.user in lists_watched.watchers.all():
+            lists_watched.watchers.remove(request.user)
+            # print('request.user is: ', request.user)
+        else:
+            lists_watched.watchers.add(request.user)
+        return redirect(reverse('auctions:index'))
 
 
 class CategoriesView(View):
