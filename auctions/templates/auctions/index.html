@@ -10,15 +10,29 @@
                 <div class="card-body">
                 <a href="{% url 'auctions:view_list' list.id %}">
                     <div class="row">
+                        <div class="col-12 text-right">
+                            {% if list.active %}
+                                <button class="btn btn-sm btn-success">ACTIVE</button>
+                            {% else %}
+                                <button class="btn btn-sm btn-danger">CLOSED</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row">
+
                         <div class="col-4">
                             <img class="profile-pic" src="{{ list.photo.url }}" height="150" width="200">
                         </div>
                         <div class="col-8">
-                            <p>{{ list.title }}</p>
+                            <h4>{{ list.title }}</h4>
                             <p>{{ list.description }}</p>
-                            <p>{{ list.p }}</p>
+                            {% if list.current_bid %}
+                                <p>Price <b> ${{ list.current_bid }}</b></p>
+                            {% else %}
+                                <p>Price <b> ${{ list.start_bid }}</b></p>
+                            {% endif %}
 
-                            <p>{{ list.created_at }}</p>
+                            <p>Published on {{ list.created_at }}</p>
                         </div>
                     </div>
                 </a>
@@ -33,7 +47,6 @@
                                 <input type="submit" class="btn btn-sm btn-success" value="Add to Watchlist">
                             {% endif %}
                         </form>
-
                     {% endif %}
                 </div>
             </div>

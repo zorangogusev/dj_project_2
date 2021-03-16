@@ -10,7 +10,7 @@ from .util import check_bid
 class IndexView(View):
 
     def get(self, request):
-        lists = List.objects.all().filter(active=True).order_by('-created_at')
+        lists = List.objects.all().order_by('-created_at')
 
         for list in lists:
             list.watched = True if request.user in list.watchers.all() else False
@@ -25,7 +25,7 @@ class IndexView(View):
 class ListView(View):
     def get(self, request, list_id):
         try:
-            list = List.objects.filter(active=True).get(pk=list_id)
+            list = List.objects.get(pk=list_id)
         except Exception as e:
             assert e
             return redirect(reverse('auctions:index'))
@@ -131,7 +131,7 @@ class OfferBidView(View):
         print(request.POST)
         list = List.objects.get(id=list_id)
 
-        if not check_bid(float(request.POST.get('price')), list):
+        if not check_bid(request.POST.get('price'), list):
             return redirect(reverse('auctions:view_list', args=[list_id]) + '?message=Please enter bigger offer than '
                                                                             'start price and actual price ')
         # need refactor
@@ -144,3 +144,25 @@ class OfferBidView(View):
         list.save()
 
         return redirect(reverse('auctions:view_list', args=[list_id]))
+
+
+class CloseListView(View):
+    def post(self, request):
+        try:
+            list = List.objects.get(id=request.POST.get('list_id'))
+        except Exception as e:
+            assert e
+            return redirect(reverse('auctions:index'))
+
+        if request.user != list.owner:
+            print('not owner')
+            return redirect(reverse('auctions:index'))
+
+        print('here')
+        print(request.POST)
+
+        list.active = False
+        list.new_owner = Bid.objects.filter(list=list).last().user
+        list.save()
+
+        return redirect(reverse('auctions:view_list', args=[request.POST.get('list_id')]))

@@ -6,7 +6,19 @@
         <h1>List {{ list.title }}</h1>
             <div class="card mt-2">
                 <div class="card-body">
-
+                    {% if request.user == list.owner %}
+                        {% if list.active %}
+                        <form action="{% url 'auctions:close_list' %}" method="POST" class="text-right">
+                            {% csrf_token %}
+                            <input type="hidden" name="list_id" value="{{ list.id }}">
+                            <input type="submit" class="btn btn-sm btn-success" value="Close the offer">
+                        </form>
+                        {% else %}
+                            <div class="text-right">
+                                <button class="btn btn-sm btn-danger">CLOSED</button>
+                            </div>
+                        {% endif %}
+                    {% endif %}
                     <div class="row">
                         <div class="col-6">
                             <img class="profile-pic" src="{{ list.photo.url }}" height="350" width="400">
@@ -33,18 +45,24 @@
                             </div>
                             <hr>
                             <div class="row">
-
-                                <div class="col-12">
-                                    <p>Actual price: {{ list.current_bid }}</p>
-                                    {% if message %}
-                                        <p>{{ message|safe }}</p>
-                                    {% endif %}
-                                    <form action="{% url 'auctions:offer_bid' list.id %}" method="POST">
-                                        {% csrf_token %}
-                                        {{ offer_bid_form }}
-                                        <input type="submit" class="btn btn-sm btn-success mt-2" value="Give offer">
-                                    </form>
-                                </div>
+                                {% if list.active %}
+                                    <div class="col-12">
+                                        <p>Actual price: {{ list.current_bid }}</p>
+                                        {% if message %}
+                                            <p>{{ message|safe }}</p>
+                                        {% endif %}
+                                        <form action="{% url 'auctions:offer_bid' list.id %}" method="POST">
+                                            {% csrf_token %}
+                                            {{ offer_bid_form }}
+                                            <input type="submit" class="btn btn-sm btn-success mt-2" value="Give offer">
+                                        </form>
+                                    </div>
+                                {% else %}
+                                    <div>
+                                        New Owner is <b>{{ list.new_owner }}</b> for ${{ list.current_bid }}
+                                        <button class="btn btn-sm btn-danger">CLOSED</button>
+                                    </div>
+                                {% endif %}
 
                             </div>
                             <hr>

@@ -17,11 +17,12 @@ class List(models.Model):
     start_bid = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
-    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     photo = models.ImageField(default='default-image.png', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     watchers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="watched_listings")
-    current_bid = models.FloatField(blank=True, null=True)
+    current_bid = models.FloatField(default=0, blank=True, null=True)
+    new_owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='new_owner', blank=True, null=True, on_delete=models.PROTECT)
 
     def __str__(self):
         return str(self.id) + ' ' + self.title
@@ -42,4 +43,3 @@ class Bid(models.Model):
 
     def __str__(self):
         return str(self.id) + ' - $' + str(self.price) + ' - ' + self.created_at.strftime('%B %d %Y')
-

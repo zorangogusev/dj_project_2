@@ -12,6 +12,8 @@ urlpatterns = [
          name="watch_list"),
     path("auctions/categories/", login_required(views.CategoriesView.as_view(), login_url='auctions:index'),
          name="categories"),
+    path("auctions/closelist/", login_required(views.CloseListView.as_view(), login_url='auctions:index'),
+         name="close_list"),
     path("auctions/listsbycategory/<str:category_id>",
          login_required(views.ListsByCategoryView.as_view(),  login_url='auctions:index'), name="lists_by_category"),
     path("auctions/<str:list_id>/", login_required(views.ListView.as_view(), login_url='auctions:index'),
