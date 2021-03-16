@@ -5,12 +5,12 @@
     <div class="container">
         <h2>Active Listings</h2>
         {% for list in lists %}
-            <a href="#">
+            <a href="{% url 'auctions:view_list' list.id %}">
                 <div class="card mt-2">
                     <div class="card-body">
                         <div class="row">
                             <div class="col-4">
-                                <img class="profile-pic" src="{{ list.photo.url }}" >
+                                <img class="profile-pic" src="{{ list.photo.url }}" height="150" width="200">
                             </div>
                             <div class="col-8">
                                 <p>{{ list.title }}</p>

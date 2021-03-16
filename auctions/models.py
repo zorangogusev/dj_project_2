@@ -21,7 +21,7 @@ class List(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return str(self.id) + ' ' + self.title
 
 
 class ListComment(models.Model):

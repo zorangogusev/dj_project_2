@@ -10,12 +10,26 @@ from .models import List
 class IndexView(View):
 
     def get(self, request):
-        lists = List.objects.all().order_by('-created_at')
+        lists = List.objects.all().filter(active=True).order_by('-created_at')
         context = {
             'lists': lists
         }
 
         return render(request, "auctions/index.html", context)
+
+
+class ListView(View):
+    def get(self, request, list_id):
+        try:
+            list = List.objects.filter(active=True).get(pk=list_id)
+        except Exception as e:
+            assert e
+            return redirect(reverse('auctions:index'))
+
+        context = {
+            'list': list
+        }
+        return render(request, 'auctions/view_list.html', context)
 
 
 class CreateListView(View):
