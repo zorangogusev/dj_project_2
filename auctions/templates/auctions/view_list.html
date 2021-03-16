@@ -15,7 +15,7 @@
                             <h1>{{ list.title }}</h1>
                             <div class="row">
                                 <div class="col-6">
-                                    price <b>${{ list.start_bid }}</b>
+                                    Start price <b>${{ list.start_bid }}</b>
                                 </div>
                                 <div class="col-6">
                                     {% if user.is_authenticated %}
@@ -31,6 +31,23 @@
                                     {% endif %}
                                 </div>
                             </div>
+                            <hr>
+                            <div class="row">
+
+                                <div class="col-12">
+                                    <p>Actual price: {{ list.current_bid }}</p>
+                                    {% if message %}
+                                        <p>{{ message|safe }}</p>
+                                    {% endif %}
+                                    <form action="{% url 'auctions:offer_bid' list.id %}" method="POST">
+                                        {% csrf_token %}
+                                        {{ offer_bid_form }}
+                                        <input type="submit" class="btn btn-sm btn-success mt-2" value="Give offer">
+                                    </form>
+                                </div>
+
+                            </div>
+                            <hr>
                             <p>{{ list.description }}</p>
                             <p>Created on date {{ list.created_at }}</p>
                         </div>

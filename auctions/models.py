@@ -21,6 +21,7 @@ class List(models.Model):
     photo = models.ImageField(default='default-image.png', null=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     watchers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="watched_listings")
+    current_bid = models.FloatField(blank=True, null=True)
 
     def __str__(self):
         return str(self.id) + ' ' + self.title
@@ -38,3 +39,7 @@ class Bid(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     price = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.id) + ' - $' + str(self.price) + ' - ' + self.created_at.strftime('%B %d %Y')
+

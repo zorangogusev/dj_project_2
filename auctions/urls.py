@@ -18,4 +18,6 @@ urlpatterns = [
          name="view_list"),
     path("auctions/addcomment/<str:list_id>/", login_required(views.AddCommentView.as_view(), login_url='auctions:index'),
          name="add_comment"),
+    path("auctions/offerbid/<str:list_id>/", login_required(views.OfferBidView.as_view(), login_url='auctions:index'),
+         name="offer_bid"),
 ]

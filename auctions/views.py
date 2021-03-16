@@ -1,11 +1,10 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views import View
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 
 from auctions import forms as auctions_forms
-from .models import List, Category, ListComment
+from .models import List, Category, ListComment, Bid
+from .util import check_bid
 
 
 class IndexView(View):
@@ -34,11 +33,15 @@ class ListView(View):
         list.watched = True if request.user in list.watchers.all() else False
         comment_form = auctions_forms.ListCommentForm
         comments = ListComment.objects.filter(list_id=list_id).order_by('-created_at')
+        offer_bid_form = auctions_forms.BidForm()
+        message = request.GET.get('message') if request.GET.getlist('message') else None
 
         context = {
             'list': list,
             'comment_form': comment_form,
-            'comments': comments
+            'comments': comments,
+            'offer_bid_form': offer_bid_form,
+            'message': message
         }
         return render(request, 'auctions/view_list.html', context)
 
@@ -52,6 +55,7 @@ class CreateListView(View):
         return render(request, 'auctions/create_list.html', context)
 
     def post(self, request):
+        # need refactor
         form = auctions_forms.ListForm(request.POST, request.FILES)
 
         if form.is_valid():
@@ -62,7 +66,7 @@ class CreateListView(View):
 
 class WatchListView(View):
 
-    def get(self, request, list_id=None):
+    def get(self, request):
         lists = request.user.watched_listings.all()
 
         context = {
@@ -118,5 +122,25 @@ class AddCommentView(View):
             new_form.user = request.user
             new_form.list = list
             new_form.save()
+
+        return redirect(reverse('auctions:view_list', args=[list_id]))
+
+
+class OfferBidView(View):
+    def post(self, request, list_id):
+        print(request.POST)
+        list = List.objects.get(id=list_id)
+
+        if not check_bid(float(request.POST.get('price')), list):
+            return redirect(reverse('auctions:view_list', args=[list_id]) + '?message=Please enter bigger offer than '
+                                                                            'start price and actual price ')
+        # need refactor
+        form = auctions_forms.BidForm(request.POST)
+        new_bid = form.save(commit=False)
+        new_bid.list = list
+        new_bid.user = request.user
+        new_bid.save()
+        list.current_bid = request.POST.get('price')
+        list.save()
 
         return redirect(reverse('auctions:view_list', args=[list_id]))

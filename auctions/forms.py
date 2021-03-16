@@ -1,7 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 
-from .models import List, ListComment
+from .models import List, ListComment, Bid
 
 
 class ListForm(ModelForm):
@@ -20,3 +20,9 @@ class ListCommentForm(ModelForm):
                 'placeholder': 'Enter comment...',
             })
         }
+
+
+class BidForm(ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['price']
