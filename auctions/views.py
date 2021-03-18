@@ -59,7 +59,7 @@ class CreateListView(View):
         form = auctions_forms.ListForm(request.POST, request.FILES)
 
         if not form.is_valid():
-            print(form.errors)
+            # print(form.errors)
             form = auctions_forms.ListForm(request.POST)
             context = {
                 'form': form,
@@ -82,7 +82,7 @@ class WatchListView(View):
         context = {
             'lists': lists
         }
-        return render(request, 'auctions/watchlist.html', context)
+        return render(request, 'auctions/watch_list.html', context)
 
     def post(self, request):
         lists_watched = List.objects.get(id=request.POST.get('list_id'))
@@ -119,7 +119,7 @@ class ListsByCategoryView(View):
             'category': category,
             'lists': lists
         }
-        return render(request, 'auctions/lists_by_categories.html', context)
+        return render(request, 'auctions/lists_by_category.html', context)
 
 
 class AddCommentView(View):
@@ -141,7 +141,6 @@ class AddCommentView(View):
 
 class OfferBidView(View):
     def post(self, request, list_id):
-        print(request.POST)
         list = List.objects.get(id=list_id)
 
         if not check_bid(request.POST.get('price'), list):
@@ -160,7 +159,7 @@ class OfferBidView(View):
         list.current_bid = request.POST.get('price')
         list.save()
 
-        return redirect(reverse('auctions:view_list', args=[list_id]))
+        return redirect(reverse('auctions:view_list', args=[list_id]) + '?message=Successfully added bid.')
 
 
 class CloseListView(View):
@@ -172,11 +171,8 @@ class CloseListView(View):
             return redirect(reverse('auctions:index'))
 
         if request.user != list.owner:
-            print('not owner')
+            # print('not owner')
             return redirect(reverse('auctions:index'))
-
-        print('here')
-        print(request.POST)
 
         list.active = False
         list.new_owner = Bid.objects.filter(list=list).last().user
