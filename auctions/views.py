@@ -58,10 +58,18 @@ class CreateListView(View):
         # need refactor
         form = auctions_forms.ListForm(request.POST, request.FILES)
 
-        if form.is_valid():
-            newList = form.save(commit=False)
-            newList.owner = request.user
-            newList.save()
+        if not form.is_valid():
+            print(form.errors)
+            form = auctions_forms.ListForm(request.POST)
+            context = {
+                'form': form,
+                'message': 'error'
+            }
+            return render(request, 'auctions/create_list.html', context)
+
+        new_list = form.save(commit=False)
+        new_list.owner = request.user
+        new_list.save()
 
         return redirect(reverse('auctions:index'))
 
