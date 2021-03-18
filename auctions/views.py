@@ -127,11 +127,14 @@ class AddCommentView(View):
         # need refactor...
         list = List.objects.get(id=list_id)
         form = auctions_forms.ListCommentForm(request.POST)
-        if form.is_valid():
-            new_form = form.save(commit=False)
-            new_form.user = request.user
-            new_form.list = list
-            new_form.save()
+
+        if not form.is_valid():
+            return redirect(reverse('auctions:view_list', args=[list_id]))
+
+        new_form = form.save(commit=False)
+        new_form.user = request.user
+        new_form.list = list
+        new_form.save()
 
         return redirect(reverse('auctions:view_list', args=[list_id]))
 
@@ -146,6 +149,10 @@ class OfferBidView(View):
                                                                             'start price and actual price ')
         # need refactor
         form = auctions_forms.BidForm(request.POST)
+
+        if not form.is_valid():
+            return redirect(reverse('auctions:view_list', args=[list_id]))
+
         new_bid = form.save(commit=False)
         new_bid.list = list
         new_bid.user = request.user
