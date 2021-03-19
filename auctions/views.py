@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, HttpResponse, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
@@ -12,9 +12,6 @@ class IndexView(View):
 
     def get(self, request):
         ad_listings = AdListing.objects.all().order_by('-created_at')
-
-        for ad_listing in ad_listings:
-            ad_listing.watched = True if request.user in ad_listing.watchers.all() else False
 
         context = {
             'ad_listings': ad_listings
@@ -32,7 +29,6 @@ class AdListingView(LoginRequiredMixin, View):
             assert e
             return redirect(reverse('auctions:index'))
 
-        ad_listing.watched = True if request.user in ad_listing.watchers.all() else False
         comment_form = auctions_forms.CommentForm
         comments = Comment.objects.filter(ad_listing=ad_listing).order_by('-created_at')
         offer_bid_form = auctions_forms.BidForm()
@@ -108,11 +104,7 @@ class CategoriesView(LoginRequiredMixin, View):
 class AdListingsByCategoryView(LoginRequiredMixin, View):
 
     def get(self, request, category_id):
-        try:
-            category = Category.objects.get(id=category_id)
-        except Exception as e:
-            assert e
-            return redirect(reverse('auctions:index'))
+        category = get_object_or_404(Category, pk=category_id)
 
         ad_listings = AdListing.objects.filter(category_id=category_id)
         context = {
@@ -167,11 +159,7 @@ class OfferBidView(LoginRequiredMixin, View):
 class CloseAdListingView(LoginRequiredMixin, View):
 
     def post(self, request):
-        try:
-            ad_listing = AdListing.objects.get(id=request.POST.get('ad_listing_id'))
-        except Exception as e:
-            assert e
-            return redirect(reverse('auctions:index'))
+        ad_listing = get_object_or_404(AdListing, id=request.POST.get('ad_listing_id'))
 
         if request.user != ad_listing.owner:
             return redirect(reverse('auctions:index'))

@@ -22,10 +22,15 @@ class AdListing(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     watchers = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name="watched_listings")
     current_bid = models.FloatField(default=0, blank=True, null=True)
-    new_owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='new_owner', blank=True, null=True, on_delete=models.PROTECT)
+    new_owner = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='new_owner', blank=True, null=True,
+                                  on_delete=models.PROTECT)
 
     def __str__(self):
         return str(self.id) + ' ' + self.title
+
+    @property
+    def watched(self):
+        return self.watchers.all().exists()
 
 
 class Comment(models.Model):
