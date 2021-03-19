@@ -11,7 +11,7 @@ class Category(models.Model):
         return self.name
 
 
-class List(models.Model):
+class AdListing(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=300)
     start_bid = models.FloatField()
@@ -28,15 +28,15 @@ class List(models.Model):
         return str(self.id) + ' ' + self.title
 
 
-class ListComment(models.Model):
+class Comment(models.Model):
     content = models.CharField(max_length=200)
-    list = models.ForeignKey(List, on_delete=models.CASCADE)
+    ad_listing = models.ForeignKey(AdListing, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
 
 
 class Bid(models.Model):
-    list = models.ForeignKey(List, on_delete=models.CASCADE)
+    ad_listing = models.ForeignKey(AdListing, on_delete=models.CASCADE)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     price = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)

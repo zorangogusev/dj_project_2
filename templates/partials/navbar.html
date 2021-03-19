@@ -15,10 +15,10 @@
         </li>
         {% if user.is_authenticated %}
           <li class="nav-item">
-              <a class="nav-link" href="{% url 'auctions:create_list' %}">Create List</a>
+              <a class="nav-link" href="{% url 'auctions:create_ad_listing' %}">Create List</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="{% url 'auctions:watch_list' %}">Watchlist</a>
+              <a class="nav-link" href="{% url 'auctions:watch_ad_listing' %}">Watchlist</a>
           </li>
           <li class="nav-item">
               <a class="nav-link" href="{% url 'auctions:categories' %}">Categories</a>

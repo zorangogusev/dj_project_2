@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from datetime import datetime
-from auctions.models import Category, List
+from auctions.models import Category, AdListing
 from auctions.util import check_bid
 
 
@@ -18,7 +18,7 @@ class TestUtil(TestCase):
             name='shoes'
         )
 
-        self.list = List.objects.create(
+        self.ad_listing = AdListing.objects.create(
             title='title_test_example',
             description='desc_test_example',
             start_bid=10,
@@ -29,11 +29,11 @@ class TestUtil(TestCase):
         )
 
     def test_check_bid_return_true(self):
-        check = check_bid(11, self.list)
+        check = check_bid(11, self.ad_listing)
 
         self.assertTrue(check)
 
     def test_check_bid_return_false(self):
-        check = check_bid(9, self.list)
+        check = check_bid(9, self.ad_listing)
 
         self.assertFalse(check)

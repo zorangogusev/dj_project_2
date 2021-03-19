@@ -4,14 +4,14 @@
 
     <div class="container">
         <h2>Active Listings</h2>
-        {% for list in lists %}
+        {% for ad_listing in ad_listings %}
 
             <div class="card mt-2">
                 <div class="card-body">
-                <a href="{% url 'auctions:view_list' list.id %}">
+                <a href="{% url 'auctions:view_ad_listing' ad_listing.id %}">
                     <div class="row">
                         <div class="col-12 text-right">
-                            {% if list.active %}
+                            {% if ad_listing.active %}
                                 <button class="btn btn-sm btn-success">ACTIVE</button>
                             {% else %}
                                 <button class="btn btn-sm btn-danger">CLOSED</button>
@@ -21,27 +21,27 @@
                     <div class="row">
 
                         <div class="col-4">
-                            <img class="profile-pic" src="{{ list.photo.url }}" height="150" width="200">
+                            <img class="profile-pic" src="{{ ad_listing.photo.url }}" height="150" width="200">
                         </div>
                         <div class="col-8">
-                            <h4>{{ list.title }}</h4>
-                            <p>{{ list.description }}</p>
-                            {% if list.current_bid %}
-                                <p>Price <b> ${{ list.current_bid }}</b></p>
+                            <h4>{{ ad_listing.title }}</h4>
+                            <p>{{ ad_listing.description }}</p>
+                            {% if ad_listing.current_bid %}
+                                <p>Price <b> ${{ ad_listing.current_bid }}</b></p>
                             {% else %}
-                                <p>Price <b> ${{ list.start_bid }}</b></p>
+                                <p>Price <b> ${{ ad_listing.start_bid }}</b></p>
                             {% endif %}
 
-                            <p>Published on {{ list.created_at }}</p>
+                            <p>Published on {{ ad_listing.created_at }}</p>
                         </div>
                     </div>
                 </a>
                     <hr>
                     {% if user.is_authenticated %}
-                        <form action="{% url 'auctions:watch_list' %}" method="POST">
+                        <form action="{% url 'auctions:watch_ad_listing' %}" method="POST">
                             {% csrf_token %}
-                            <input type="hidden" name="list_id" value="{{ list.id }}">
-                            {% if list.watched == True %}
+                            <input type="hidden" name="ad_listing_id" value="{{ ad_listing.id }}">
+                            {% if ad_listing.watched == True %}
                                 <input type="submit" class="btn btn-sm btn-danger" value="Remove from Watchlist">
                             {% else %}
                                 <input type="submit" class="btn btn-sm btn-success" value="Add to Watchlist">

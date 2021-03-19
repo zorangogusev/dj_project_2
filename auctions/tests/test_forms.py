@@ -10,10 +10,10 @@ class TestForms(TestCase):
             name='shoes'
         )
 
-    def test_list_form_valid_data(self):
+    def test_ad_listing_form_valid_data(self):
         category = Category.objects.filter(name='shoes').first()
 
-        form = forms.ListForm(data={
+        form = forms.AdListingForm(data={
             'title': 'test title',
             'description': 'test description',
             'start_bid': 10,
@@ -22,8 +22,8 @@ class TestForms(TestCase):
 
         self.assertTrue(form.is_valid())
 
-    def test_list_comment_form_valid_data(self):
-        form = forms.ListCommentForm(data={
+    def test_comment_form_valid_data(self):
+        form = forms.CommentForm(data={
             'content': 'test comment content',
         })
         # print('form errors are: ', form.errors)

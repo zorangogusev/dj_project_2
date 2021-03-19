@@ -3,95 +3,92 @@ from django.shortcuts import render, HttpResponse, redirect, reverse
 from django.views import View
 
 from auctions import forms as auctions_forms
-from .models import List, Category, ListComment, Bid
+from .models import AdListing, Category, Comment, Bid
 from .util import check_bid
 
 
 class IndexView(View):
 
     def get(self, request):
-        lists = List.objects.all().order_by('-created_at')
+        ad_listings = AdListing.objects.all().order_by('-created_at')
 
-        for list in lists:
-            list.watched = True if request.user in list.watchers.all() else False
+        for ad_listing in ad_listings:
+            ad_listing.watched = True if request.user in ad_listing.watchers.all() else False
 
         context = {
-            'lists': lists
+            'ad_listings': ad_listings
         }
 
         return render(request, "auctions/index.html", context)
 
 
-class ListView(View):
-    def get(self, request, list_id):
+class AdListingView(View):
+    def get(self, request, ad_listing_id):
         try:
-            list = List.objects.get(pk=list_id)
+            ad_listing = AdListing.objects.get(pk=ad_listing_id)
         except Exception as e:
             assert e
             return redirect(reverse('auctions:index'))
 
-        list.watched = True if request.user in list.watchers.all() else False
-        comment_form = auctions_forms.ListCommentForm
-        comments = ListComment.objects.filter(list_id=list_id).order_by('-created_at')
+        ad_listing.watched = True if request.user in ad_listing.watchers.all() else False
+        comment_form = auctions_forms.CommentForm
+        comments = Comment.objects.filter(ad_listing=ad_listing).order_by('-created_at')
         offer_bid_form = auctions_forms.BidForm()
         message = request.GET.get('message') if request.GET.getlist('message') else None
 
         context = {
-            'list': list,
+            'ad_listing': ad_listing,
             'comment_form': comment_form,
             'comments': comments,
             'offer_bid_form': offer_bid_form,
             'message': message
         }
-        return render(request, 'auctions/view_list.html', context)
+        return render(request, 'auctions/view_ad_listing.html', context)
 
 
-class CreateListView(View):
+class CreateAdListingView(View):
     def get(self, request):
-        form = auctions_forms.ListForm()
+        form = auctions_forms.AdListingForm()
         context = {
             'form': form
         }
-        return render(request, 'auctions/create_list.html', context)
+        return render(request, 'auctions/create_ad_listing.html', context)
 
     def post(self, request):
-        # need refactor
-        form = auctions_forms.ListForm(request.POST, request.FILES)
+        form = auctions_forms.AdListingForm(request.POST, request.FILES)
 
         if not form.is_valid():
-            # print(form.errors)
-            form = auctions_forms.ListForm(request.POST)
+            form = auctions_forms.AdListingForm(request.POST)
             context = {
                 'form': form,
                 'message': 'error'
             }
-            return render(request, 'auctions/create_list.html', context)
+            return render(request, 'auctions/create_ad_listing.html', context)
 
-        new_list = form.save(commit=False)
-        new_list.owner = request.user
-        new_list.save()
+        new_ad_listing = form.save(commit=False)
+        new_ad_listing.owner = request.user
+        new_ad_listing.save()
 
         return redirect(reverse('auctions:index'))
 
 
-class WatchListView(View):
+class WatchAdListingView(View):
 
     def get(self, request):
-        lists = request.user.watched_listings.all()
+        ad_listings = request.user.watched_listings.all()
 
         context = {
-            'lists': lists
+            'ad_listings': ad_listings
         }
-        return render(request, 'auctions/watch_list.html', context)
+        return render(request, 'auctions/watch_ad_listing.html', context)
 
     def post(self, request):
-        lists_watched = List.objects.get(id=request.POST.get('list_id'))
+        ad_listings_watched = AdListing.objects.get(id=request.POST.get('ad_listing_id'))
 
-        if request.user in lists_watched.watchers.all():
-            lists_watched.watchers.remove(request.user)
-            # print('request.user is: ', request.user)
+        if request.user in ad_listings_watched.watchers.all():
+            ad_listings_watched.watchers.remove(request.user)
         else:
-            lists_watched.watchers.add(request.user)
+            ad_listings_watched.watchers.add(request.user)
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
@@ -105,7 +102,7 @@ class CategoriesView(View):
         return render(request, 'auctions/categories_page.html', context)
 
 
-class ListsByCategoryView(View):
+class AdListingsByCategoryView(View):
 
     def get(self, request, category_id):
         try:
@@ -114,68 +111,67 @@ class ListsByCategoryView(View):
             assert e
             return redirect(reverse('auctions:index'))
 
-        lists = List.objects.filter(category_id=category_id)
+        ad_listings = AdListing.objects.filter(category_id=category_id)
         context = {
             'category': category,
-            'lists': lists
+            'ad_listings': ad_listings
         }
-        return render(request, 'auctions/lists_by_category.html', context)
+        return render(request, 'auctions/ad_listings_by_category.html', context)
 
 
 class AddCommentView(View):
-    def post(self, request, list_id):
-        # need refactor...
-        list = List.objects.get(id=list_id)
-        form = auctions_forms.ListCommentForm(request.POST)
+    def post(self, request, ad_listing_id):
+        ad_listing = AdListing.objects.get(id=ad_listing_id)
+        form = auctions_forms.CommentForm(request.POST)
 
         if not form.is_valid():
-            return redirect(reverse('auctions:view_list', args=[list_id]))
+            return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]))
 
         new_form = form.save(commit=False)
         new_form.user = request.user
-        new_form.list = list
+        new_form.ad_listing = ad_listing
         new_form.save()
 
-        return redirect(reverse('auctions:view_list', args=[list_id]))
+        return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]))
 
 
 class OfferBidView(View):
-    def post(self, request, list_id):
-        list = List.objects.get(id=list_id)
+    def post(self, request, ad_listing_id):
+        ad_listing = AdListing.objects.get(id=ad_listing_id)
 
-        if not check_bid(request.POST.get('price'), list):
-            return redirect(reverse('auctions:view_list', args=[list_id]) + '?message=Please enter bigger offer than '
+        if not check_bid(request.POST.get('price'), ad_listing):
+            return redirect(
+                reverse('auctions:view_ad_listing', args=[ad_listing_id]) + '?message=Please enter bigger offer than '
                                                                             'start price and actual price ')
-        # need refactor
+
         form = auctions_forms.BidForm(request.POST)
 
         if not form.is_valid():
-            return redirect(reverse('auctions:view_list', args=[list_id]))
+            return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]))
 
         new_bid = form.save(commit=False)
-        new_bid.list = list
+        new_bid.ad_listing = ad_listing
         new_bid.user = request.user
         new_bid.save()
-        list.current_bid = request.POST.get('price')
-        list.save()
+        ad_listing.current_bid = request.POST.get('price')
+        ad_listing.save()
 
-        return redirect(reverse('auctions:view_list', args=[list_id]) + '?message=Successfully added bid.')
+        return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]) + '?message=Successfully added bid.')
 
 
-class CloseListView(View):
+class CloseAdListingView(View):
     def post(self, request):
         try:
-            list = List.objects.get(id=request.POST.get('list_id'))
+            ad_listing = AdListing.objects.get(id=request.POST.get('ad_listing_id'))
         except Exception as e:
             assert e
             return redirect(reverse('auctions:index'))
 
-        if request.user != list.owner:
-            # print('not owner')
+        if request.user != ad_listing.owner:
             return redirect(reverse('auctions:index'))
 
-        list.active = False
-        list.new_owner = Bid.objects.filter(list=list).last().user
-        list.save()
+        ad_listing.active = False
+        ad_listing.new_owner = Bid.objects.filter(ad_listing=ad_listing).last().user
+        ad_listing.save()
 
-        return redirect(reverse('auctions:view_list', args=[request.POST.get('list_id')]))
+        return redirect(reverse('auctions:view_ad_listing', args=[request.POST.get('ad_listing_id')]))

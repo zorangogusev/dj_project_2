@@ -1,12 +1,12 @@
 from django.forms import ModelForm
 from django import forms
 
-from .models import List, ListComment, Bid
+from .models import AdListing, Comment, Bid
 
 
-class ListForm(ModelForm):
+class AdListingForm(ModelForm):
     class Meta:
-        model = List
+        model = AdListing
         fields = ['title', 'description', 'start_bid', 'category', 'photo']
         widgets = {
             'title': forms.TextInput(attrs={
@@ -21,9 +21,9 @@ class ListForm(ModelForm):
         }
 
 
-class ListCommentForm(ModelForm):
+class CommentForm(ModelForm):
     class Meta:
-        model = ListComment
+        model = Comment
         fields = ['content']
         widgets = {
             'content': forms.TextInput(attrs={
