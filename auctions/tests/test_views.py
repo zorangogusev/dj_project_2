@@ -6,20 +6,11 @@ from datetime import datetime
 
 
 class TestViews(TestCase):
+    fixtures = ['users.json']
 
     def setUp(self):
-        self.login_url = reverse('users:login')
-        self.register_url = reverse('users:register')
-        self.user_data = {
-            'username': 'admin',
-            'email': 'admin@admin.com',
-            'password': 'zoranzoran',
-            'confirmation': 'zoranzoran',
-        }
-
-        # Create category, user, list for testing
-        self.UserInstance = get_user_model()
-        self.UserInstance = self.UserInstance.objects.create(
+        # Create user, category, ad_listing, ad_listing_data for testing
+        self.UserInstance = get_user_model().objects.create(
             username='test',
             email='test@test.com',
             password='testpassword'
@@ -55,9 +46,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_see_ad_listing_page(self):
         url = reverse('auctions:view_ad_listing', args=[self.ad_listing.id])
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(url)
 
@@ -72,9 +62,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_see_create_ad_listing_page(self):
         url = reverse('auctions:create_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(url, format='text/html')
 
@@ -89,9 +78,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_create_new_ad_listing(self):
         url = reverse('auctions:create_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.post(url, self.ad_listing_data, format='text/html')
 
@@ -108,16 +96,15 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_see_watch_ad_listing_page(self):
         url = reverse('auctions:watch_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(url, format='text/html')
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'auctions/watch_ad_listing.html')
 
-    def test_logged_in_user_can_not_see_watch_ad_listing_page(self):
+    def test_not_logged_in_user_can_not_see_watch_ad_listing_page(self):
         url = reverse('auctions:watch_ad_listing')
 
         response = self.client.get(url, format='text/html')
@@ -126,21 +113,18 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_add_ad_listing_to_watch_ad_listing_page(self):
         url = reverse('auctions:watch_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         ad_listing = AdListing.objects.get(id=self.ad_listing.id)
+        response = self.client.post(url, {'ad_listing_id': ad_listing.id}, format='text/html', follow=True)
 
-        response = self.client.post(url, {'ad_listing_id': ad_listing.id}, format='text/html')
-
-        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'users/login.html')
 
     def test_logged_in_user_can_see_categories_page(self):
         url = reverse('auctions:categories')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(url, format='text/html')
 
@@ -156,9 +140,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_see_ad_listings_by_category_page(self):
         url = reverse('auctions:ad_listings_by_category', args=[self.category.id])
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(url, format='text/html')
 
@@ -174,9 +157,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_add_comment_to_ad_listing_page(self):
         url = reverse('auctions:add_comment', args=[self.ad_listing.id])
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         comment = {
             'content': 'comment content'
@@ -198,9 +180,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_can_offer_bid_to_ad_listing_page(self):
         url = reverse('auctions:offer_bid', args=[self.ad_listing.id])
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         context = {
             'price': 11
@@ -225,12 +206,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_that_is_the_owner_can_close_ad_listing_page(self):
         url = reverse('auctions:close_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
-
-        User = get_user_model()
-        user = User.objects.filter(username=self.user_data['username']).first()
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         ad_listing = AdListing.objects.create(
             title='title_test_example',
@@ -253,12 +230,8 @@ class TestViews(TestCase):
 
     def test_logged_in_user_that_is_not_the_owner_can_not_close_ad_listing_page(self):
         url = reverse('auctions:close_ad_listing')
-
-        # register user and immediately the user is logged in
-        self.client.post(self.register_url, self.user_data, format='text/html')
-
-        User = get_user_model()
-        user = User.objects.filter(username=self.user_data['username']).first()
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         ad_listing = AdListing.objects.create(
             title='title_test_example',
