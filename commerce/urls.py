@@ -26,5 +26,6 @@ urlpatterns = [
     path("", include("auctions.urls")),
 ]
 
-# to display images set:
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    # to display images set:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

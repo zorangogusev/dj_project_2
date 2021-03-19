@@ -39,15 +39,9 @@ class RegisterTest(TestCase):
 
 
 class LoginTest(TestCase):
+
     def setUp(self):
         self.login_url = reverse('users:login')
-        self.register_url = reverse('users:register')
-        self.user = {
-            'username': 'admin',
-            'email': 'admin@admin.com',
-            'password': 'zoranzoran',
-            'confirmation': 'zoranzoran',
-        }
 
     def test_can_access_login_page(self):
         response = self.client.get(self.login_url)
@@ -56,49 +50,26 @@ class LoginTest(TestCase):
         self.assertTemplateUsed(response, 'users/login.html')
 
     def test_user_can_login_successfully(self):
-        # create user
-        self.client.post(self.register_url, self.user, format='text/html')
-        User = get_user_model()
-        user = User.objects.filter(username=self.user['username']).first()
-        user.is_active = True
-        user.save()
+        get_user_model().objects.create_user(username='testuser', email='test@test.com', password='12345')
+        response = self.client.login(username='testuser', password='12345')
 
-        response = self.client.post(self.login_url, self.user, format='text/html')
-
-        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response)
 
     def test_guest_can_not_login(self):
-        User = get_user_model()
-        user = User.objects.filter(username=self.user['username']).first()
-        response = self.client.post(self.login_url, self.user, format='text/html')
-        message = response.context['message']
+        response = self.client.login(username='testuser', password='12345')
 
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/login.html')
-        self.assertEqual(len(message[0]), 1)
-        self.assertEqual(str(message), 'Invalid username and/or password.')
+        self.assertFalse(response)
 
 
 class LogoutTest(TestCase):
+    fixtures = ['users.json']
 
     def setUp(self):
-        self.login_url = reverse('users:login')
-        self.register_url = reverse('users:register')
         self.logout_url = reverse('users:logout')
-        self.user = {
-            'username': 'admin',
-            'email': 'admin@admin.com',
-            'password': 'zoranzoran',
-            'confirmation': 'zoranzoran',
-        }
 
     def test_logged_in_user_can_logout(self):
-        self.client.post(self.register_url, self.user, format='text/html')
-        User = get_user_model()
-        user = User.objects.filter(username=self.user['username']).first()
-        user.is_active = True
-        user.save()
-        self.client.post(self.login_url, self.user, format='text/html')
+        user = get_user_model().objects.get(username='admin-fixture')
+        self.client.force_login(user)
 
         response = self.client.get(self.logout_url)
         self.assertEqual(response.status_code, 302)
