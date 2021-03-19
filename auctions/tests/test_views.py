@@ -194,7 +194,7 @@ class TestViews(TestCase):
         response = self.client.post(url, comment, format='text/html', follow=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'auctions/index.html')
+        self.assertTemplateUsed(response, 'users/login.html')
 
     def test_logged_in_user_can_offer_bid_to_ad_listing_page(self):
         url = reverse('auctions:offer_bid', args=[self.ad_listing.id])
@@ -221,7 +221,7 @@ class TestViews(TestCase):
         response = self.client.post(url, context, format='text/html', follow=True)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'auctions/index.html')
+        self.assertTemplateUsed(response, 'users/login.html')
 
     def test_logged_in_user_that_is_the_owner_can_close_ad_listing_page(self):
         url = reverse('auctions:close_ad_listing')

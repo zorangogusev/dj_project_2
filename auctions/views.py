@@ -1,5 +1,6 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, HttpResponse, redirect, reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 
 from auctions import forms as auctions_forms
@@ -22,7 +23,8 @@ class IndexView(View):
         return render(request, "auctions/index.html", context)
 
 
-class AdListingView(View):
+class AdListingView(LoginRequiredMixin, View):
+
     def get(self, request, ad_listing_id):
         try:
             ad_listing = AdListing.objects.get(pk=ad_listing_id)
@@ -46,7 +48,8 @@ class AdListingView(View):
         return render(request, 'auctions/view_ad_listing.html', context)
 
 
-class CreateAdListingView(View):
+class CreateAdListingView(LoginRequiredMixin, View):
+
     def get(self, request):
         form = auctions_forms.AdListingForm()
         context = {
@@ -72,7 +75,7 @@ class CreateAdListingView(View):
         return redirect(reverse('auctions:index'))
 
 
-class WatchAdListingView(View):
+class WatchAdListingView(LoginRequiredMixin, View):
 
     def get(self, request):
         ad_listings = request.user.watched_listings.all()
@@ -92,7 +95,7 @@ class WatchAdListingView(View):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class CategoriesView(View):
+class CategoriesView(LoginRequiredMixin, View):
 
     def get(self, request):
         categories = Category.objects.all()
@@ -102,7 +105,7 @@ class CategoriesView(View):
         return render(request, 'auctions/categories_page.html', context)
 
 
-class AdListingsByCategoryView(View):
+class AdListingsByCategoryView(LoginRequiredMixin, View):
 
     def get(self, request, category_id):
         try:
@@ -119,7 +122,8 @@ class AdListingsByCategoryView(View):
         return render(request, 'auctions/ad_listings_by_category.html', context)
 
 
-class AddCommentView(View):
+class AddCommentView(LoginRequiredMixin, View):
+
     def post(self, request, ad_listing_id):
         ad_listing = AdListing.objects.get(id=ad_listing_id)
         form = auctions_forms.CommentForm(request.POST)
@@ -135,7 +139,8 @@ class AddCommentView(View):
         return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]))
 
 
-class OfferBidView(View):
+class OfferBidView(LoginRequiredMixin, View):
+
     def post(self, request, ad_listing_id):
         ad_listing = AdListing.objects.get(id=ad_listing_id)
 
@@ -159,7 +164,8 @@ class OfferBidView(View):
         return redirect(reverse('auctions:view_ad_listing', args=[ad_listing_id]) + '?message=Successfully added bid.')
 
 
-class CloseAdListingView(View):
+class CloseAdListingView(LoginRequiredMixin, View):
+
     def post(self, request):
         try:
             ad_listing = AdListing.objects.get(id=request.POST.get('ad_listing_id'))

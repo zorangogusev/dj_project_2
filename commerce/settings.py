@@ -134,3 +134,6 @@ STATICFILES_DIRS = [
 
 # specify directory where to save images /project_root/static/images
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+
+# specify where to be redirected the unauthorised when using LoginRequiredMixin
+LOGIN_URL = '/users/login'
