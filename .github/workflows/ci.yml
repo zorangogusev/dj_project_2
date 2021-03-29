@@ -9,5 +9,6 @@ jobs:
     - name: Run Django tests
       run: |
         pip3 install -r requirements.txt
+        python3 manage.py migrate
         python3 manage.py test auctions/tests
         python3 manage.py test auctions/tests_selenium
