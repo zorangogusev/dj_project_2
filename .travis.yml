@@ -9,5 +9,6 @@ services:
 before_script: pip install docker-compose
 
 script:
+  - docker ps --format "{{.Names}}"
   - docker exec dj_project_2_web_1 python3 manage.py test auctions/tests
   - docker exec dj_project_2_web_1 python3 manage.py test auctions/tests_selenium
