@@ -8,7 +8,7 @@ jobs:
       selenium:
         image: selenium/standalone-firefox
         env:
-          HUB_HOST: hub
+          HUB_HOST: selenium
           HUB_PORT: 4444
     steps:
     - uses: actions/checkout@v2
