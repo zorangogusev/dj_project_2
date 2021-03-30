@@ -3,6 +3,10 @@ language: python
 python:
   - "3.8"
 
+
+apt_packages:
+    - sqlite3
+
 services:
   - docker
 
