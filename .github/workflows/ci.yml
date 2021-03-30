@@ -7,6 +7,9 @@ jobs:
     services:
       selenium:
         image: selenium/standalone-firefox
+        env:
+          HUB_HOST: hub
+          HUB_PORT: 4444
     steps:
     - uses: actions/checkout@v2
     - name: geckodriver/firefox
