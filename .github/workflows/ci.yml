@@ -4,6 +4,9 @@ on: push
 jobs:
   test_project:
     runs-on: ubuntu-latest
+    services:
+      selenium:
+        image: selenium/standalone-firefox
     steps:
     - uses: actions/checkout@v2
     - name: geckodriver/firefox
