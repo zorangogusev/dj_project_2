@@ -5,7 +5,7 @@ python:
 
 
 apt_packages:
-    - sqlite3
+  - sqlite3
 
 services:
   - docker
@@ -19,3 +19,4 @@ script:
   - docker-compose run web sh -c "python3 manage.py migrate"
   - docker-compose run web sh -c "python3 manage.py loaddata data/0001_seed_data_to_database.json"
   - docker-compose run web sh -c "python3 manage.py test auctions/tests"
+  - docker-compose run web sh -c "python3 manage.py test auctions/tests_selenium"
