@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+    web:
+        build: .
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - "8000:8000"
+        depends_on:
+            - selenium
+    selenium:
+        image: selenium/standalone-firefox

@@ -1,18 +1,31 @@
-from selenium import webdriver
-from auctions.models import Category, AdListing, Comment, Bid
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import time
 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-class TestAuctions(StaticLiveServerTestCase):
+from auctions.models import Category, AdListing, Comment, Bid
+
+
+class FunctionalTestCase(StaticLiveServerTestCase):
+    # for testing in docker uncomment, for testing in venv comment it
+    host = 'web'
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        # for testing in venv
+        # self.browser = webdriver.Firefox()
+
+        # for testing in docker
+        self.browser = webdriver.Remote(
+            command_executor="http://selenium:4444/wd/hub",
+            desired_capabilities=DesiredCapabilities.FIREFOX
+        )
 
     def tearDown(self):
-        self.browser.quit()
+        self.browser.close()
 
-    def test_browser(self):
-        # self.assertEquals(1, 1)
+    def test_display_home_page(self):
         self.browser.get(self.live_server_url)
-        time.sleep(2)
+
+        div_container = self.browser.find_element_by_class_name('container')
+        self.assertEquals(div_container.find_element_by_tag_name('h2').text, 'Active Listings')
