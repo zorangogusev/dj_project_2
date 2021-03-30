@@ -1,0 +1,13 @@
+language: python
+
+python:
+  - "3.8"
+
+services:
+  - docker
+
+before_script: pip install docker-compose
+
+script:
+  - docker exec dj_project_2_web_1 python3 manage.py test auctions/tests
+  - docker exec dj_project_2_web_1 python3 manage.py test auctions/tests_selenium
