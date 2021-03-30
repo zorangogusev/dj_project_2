@@ -6,10 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Run Django tests
+    - name: geckodriver/firefox
       run: |
+          echo "geckodriver/firefox"
+          which geckodriver
+          geckodriver --version
+          which firefox
+          firefox --version
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip3 install flake8 pytest
         pip3 install -r requirements.txt
+    - name: Create/run migrations
+      run: |
         python3 manage.py makemigrations
         python3 manage.py migrate
+    - name: Run Django tests
+      run: |
         python3 manage.py test auctions/tests
-#        python3 manage.py test auctions/tests_selenium
+        python3 manage.py test auctions/tests_selenium
