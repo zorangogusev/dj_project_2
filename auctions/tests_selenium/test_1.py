@@ -21,6 +21,7 @@ class BaseTestCase(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        print('start setUpClass')
         cls.host = socket.gethostbyname(socket.gethostname())
         print('cls.host is: ', cls.host)
 
