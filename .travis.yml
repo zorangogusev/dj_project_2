@@ -13,11 +13,10 @@ services:
 before_script: pip install docker-compose
 
 script:
-  - docker-compose run web sh -c "python3 manage.py makemigrations"
-  - docker-compose run web sh -c "python3 manage.py makemigrations auctions"
-  - docker-compose run web sh -c "python3 manage.py makemigrations users"
-  - docker-compose run web sh -c "python3 manage.py migrate"
-  - docker-compose run web sh -c "python3 manage.py loaddata data/0001_seed_data_to_database.json"
-  - docker exec -it dj_project_2_web /bin/bash
+  - python3 manage.py makemigrations
+  - python3 manage.py makemigrations auctions
+  - python3 manage.py makemigrations users
+  - python3 manage.py migrate
+  - python3 manage.py loaddata data/0001_seed_data_to_database.json
   - python3 manage.py test auctions/tests
   - python3 manage.py test auctions/tests_selenium
