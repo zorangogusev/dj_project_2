@@ -31,14 +31,14 @@
                 <a class="nav-link" href="javascript:void(0)"><strong>Hello {{ user.username }}</strong></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'users:logout' %}">Log Out</a>
+                <a id="logout_user" class="nav-link" href="{% url 'users:logout' %}">Log Out</a>
             </li>
         {% else %}
              <li class="nav-item">
-                 <a class="nav-link" href="{% url 'users:login' %}">Log In</a>
+                 <a id="login_user" class="nav-link" href="{% url 'users:login' %}">Log In</a>
              </li>
              <li class="nav-item">
-                 <a class="nav-link" href="{% url 'users:register' %}">Register</a>
+                 <a id="register_user" class="nav-link" href="{% url 'users:register' %}">Register</a>
              </li>
         {% endif %}
 

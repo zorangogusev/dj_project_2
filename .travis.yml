@@ -15,8 +15,9 @@ before_script: pip install docker-compose
 script:
   - python3 manage.py makemigrations
   - python3 manage.py makemigrations auctions
-  - python3 manage.py makemigrations users
   - python3 manage.py migrate
   - python3 manage.py loaddata data/0001_seed_data_to_database.json
   - python3 manage.py test auctions/tests
   - python3 manage.py test auctions/tests_selenium
+  - python3 manage.py test users/tests
+  - python3 manage.py test users/tests_selenium
