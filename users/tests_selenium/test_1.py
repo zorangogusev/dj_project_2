@@ -9,8 +9,6 @@ from selenium import webdriver
 
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-from auctions.models import Category, AdListing, Comment, Bid
-
 
 @tag('selenium')
 @override_settings(ALLOWED_HOSTS=['*'])
@@ -27,13 +25,13 @@ class BaseTestCase(StaticLiveServerTestCase):
         cls.host = socket.gethostbyname(socket.gethostname())
 
         # for testing in docker
-        # cls.browser = webdriver.Remote(
-        #     command_executor='http://selenium:4444/wd/hub',
-        #     desired_capabilities=DesiredCapabilities.FIREFOX,
-        # )
+        cls.browser = webdriver.Remote(
+            command_executor='http://selenium:4444/wd/hub',
+            desired_capabilities=DesiredCapabilities.FIREFOX,
+        )
 
         # for testing in venv
-        cls.browser = webdriver.Firefox()
+        # cls.browser = webdriver.Firefox()
 
         cls.browser.implicitly_wait(5)
 
