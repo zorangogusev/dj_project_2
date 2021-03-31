@@ -31,6 +31,4 @@ jobs:
     - name: Run Django tests
       run: |
         python3 manage.py test auctions/tests
-#        python3 manage.py test auctions/tests_selenium
         python3 manage.py test users/tests
-#        python3 manage.py test users/tests_selenium
