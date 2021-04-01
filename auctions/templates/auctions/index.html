@@ -8,7 +8,7 @@
 
             <div class="card mt-2">
                 <div class="card-body">
-                <a href="{% url 'auctions:view_ad_listing' ad_listing.id %}">
+                <a class="link-listings" href="{% url 'auctions:view_ad_listing' ad_listing.id %}">
                     <div class="row">
                         <div class="col-12 text-right">
                             {% if ad_listing.active %}
@@ -42,9 +42,11 @@
                             {% csrf_token %}
                             <input type="hidden" name="ad_listing_id" value="{{ ad_listing.id }}">
                             {% if ad_listing.watched == True %}
-                                <input type="submit" class="btn btn-sm btn-danger" value="Remove from Watchlist">
+                                <input id="remove_from_watchlist_button" type="submit" class="btn btn-sm btn-danger"
+                                       value="Remove from Watchlist">
                             {% else %}
-                                <input type="submit" class="btn btn-sm btn-success" value="Add to Watchlist">
+                                <input id="add_to_watchlist_button" type="submit" class="btn btn-sm btn-success "
+                                       value="Add to Watchlist">
                             {% endif %}
                         </form>
                     {% endif %}
